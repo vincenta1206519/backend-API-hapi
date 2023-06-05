@@ -1,0 +1,31 @@
+const handler = require('./handler');
+
+const routes = [
+  {
+    method: 'GET',
+    path: '/',
+    handler: handler.getRoot,
+  },
+  {
+    method: 'POST',
+    path: '/api/connect-to-database',
+    handler: handler.connectToDatabase,
+  },
+  {
+    method: 'GET',
+    path: '/api/list-databases',
+    handler: handler.listDatabases,
+  },
+  {
+    method: 'GET',
+    path: '/api/get-table-data/{tableName}',
+    handler: handler.getDatabaseData,
+  },
+  {
+    method: 'GET',
+    path: '/api/get-supplier-name',
+    handler: handler.getSupplierName,
+  }
+];
+
+module.exports = routes;
