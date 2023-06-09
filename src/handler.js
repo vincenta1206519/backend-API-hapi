@@ -1,23 +1,23 @@
 const mysql = require('mysql');
 
-let connection; // Declare a global variable to hold the MySQL connection
+let connection = null; // Declare a global variable to hold the MySQL connection values
 
 const getRoot = (request, h) => {
-  return h.response({ message: 'OK' }).type('application/json');;
+  return h.response({ message: 'OK' }).type('application/json');
 };
 
 const connectToDatabase = (request, h) => {
-  //request variables from the front end
+  // Request variables from the front end
   const { username, password, host, port, database } = request.payload;
 
   return new Promise((resolve, reject) => {
-    // Create MysQL database connection
+    // Create MySQL database connection
     connection = mysql.createConnection({
       host,
       port,
       user: username,
       password,
-      database, 
+      database,
     });
 
     // Connect to the MySQL server
@@ -28,7 +28,7 @@ const connectToDatabase = (request, h) => {
         return;
       }
 
-      //Response message with the provided values is the connection was successful
+      // Response message with the provided values if the connection was successful
       const message = `Connected to the database successfully: username=${username}, password=${password}, host=${host}, port=${port}, database=${database}`;
 
       resolve({ success: true, message });
@@ -36,76 +36,36 @@ const connectToDatabase = (request, h) => {
   });
 };
 
-const listDatabases = (request, h) => {
-  return new Promise((resolve, reject) => {
-    // Get the list of databases
-    connection.query('SHOW DATABASES', (error, results) => {
-      if (error) {
-        console.error('Failed to get the list of databases:', error);
-        reject(new Error('Failed to get the list of databases'));
-        return;
-      }
-
-      // Process the query results
-      const databases = results.map((row) => row['Database']);
-
-      // Build the response with the list of databases
-      resolve({ success: true, databases });
-    });
-  });
-};
-
-
 const getSupplierName = (request, h) => {
-  const database = connection.config.database; // Get the database name from the connection configuration
+  const database = connection ? connection.config.database : null; // Get the database name from the connection configuration if its available
 
-
-  return new Promise((resolve, reject) => {
-    // Perform get all query data  with the specified table from database 
-    connection.query(`SELECT DISTINCT nama FROM ${database}.supplier_01_04_2023 INNER JOIN ${database}.pembelian_01_04_2023 ON ${database}.supplier_01_04_2023.kode = ${database}.pembelian_01_04_2023.supplier WHERE ${database}.supplier_01_04_2023.kode not like 'has%' ORDER BY nama`, (error, results) => {
-
-      if (error) {
-        console.error('Failed to execute the SELECT query:', error);
-        reject(new Error('Failed to execute the SELECT query'));
-        return;
-      }
-
-      //Process and output of the query results
-      console.log('Query results:', results);
-
-      // Build the response with the query results
-      resolve({ success: true, data: results });
-    });
-  });
-};
-
-
-//create a handler when the user click the text it will send then the data of the supplier will be shown in the table
-const getSupplierData = (request, h) => {
-  const database = connection.config.database; // Get the database name from the connection configuration
-
+  if (!database) {
+    return Promise.reject(new Error('No database connection established'));
+  }
 
   return new Promise((resolve, reject) => {
-    // Perform get all query data  with the specified supplier data from database
-    connection.query(`SELECT * FROM ${database}.supplier_31_12_2022 WHERE nama = 'PT. ABBOTT INDONESIA';`, (error, results) => {
-      if (error) {
-        console.error('Failed to see the supplier data:', error);
-        reject(new Error('Failed to see the supplier data'));
-        return;
+    // Perform get all query data with the specified table from db
+    connection.query(
+      `SELECT DISTINCT nama FROM ${database}.supplier_01_04_2023 INNER JOIN ${database}.pembelian_01_04_2023 ON ${database}.supplier_01_04_2023.kode = ${database}.pembelian_01_04_2023.supplier WHERE ${database}.supplier_01_04_2023.kode NOT LIKE 'has%' ORDER BY nama`,
+      (error, results) => {
+        if (error) {
+          console.error('Failed to execute the SELECT query:', error);
+          reject(new Error('Failed to execute the SELECT query'));
+          return;
+        }
+
+        // Process and output the query results
+        console.log('Query results:', results);
+
+        // Response message with the provided values if the connection was successful
+        resolve({ success: true, data: results });
       }
-
-      //Process and output of the query results
-      console.log('Query results:', results);
-
-      // Build the response with the query results
-      resolve({ success: true, data: results });
-    });
+    );
   });
 };
 
 module.exports = {
   getRoot,
   connectToDatabase,
-  listDatabases,
-  getSupplierName,
+  getSupplierName
 };

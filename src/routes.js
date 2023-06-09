@@ -13,11 +13,6 @@ const routes = [
   },
   {
     method: 'GET',
-    path: '/api/list-databases',
-    handler: handler.listDatabases,
-  },
-  {
-    method: 'GET',
     path: '/api/get-supplier-name',
     handler: handler.getSupplierName,
   }
