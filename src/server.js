@@ -3,12 +3,9 @@ const routes = require('./routes');
 
 const init = async () => {
   const server = Hapi.server({
-    port: port,
-    host: '0.0.0.0',
-  });
-
-  await server.register(require('hapi-boom-decorators'));
-  await server.register(require('@hapi/inert'));
+    port: process.env.PORT || 8080,
+    host: '0.0.0.0', 
+  })
 
   server.route(routes);
 
