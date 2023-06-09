@@ -18,11 +18,6 @@ const routes = [
   },
   {
     method: 'GET',
-    path: '/api/get-table-data/{tableName}',
-    handler: handler.getDatabaseData,
-  },
-  {
-    method: 'GET',
     path: '/api/get-supplier-name',
     handler: handler.getSupplierName,
   }

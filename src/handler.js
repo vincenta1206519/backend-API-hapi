@@ -56,35 +56,13 @@ const listDatabases = (request, h) => {
 };
 
 
-const getDatabaseData = (request, h) => {
-  const { tableName } = request.params;
-  const database = connection.config.database; // Get the database name from the connection configuration
-
-  return new Promise((resolve, reject) => {
-    // Perform get all query data  with the specified table and database
-    connection.query(`SELECT * FROM ${database}.${tableName} LIMIT 5`, (error, results) => {
-      if (error) {
-        console.error('Failed to execute the SELECT query:', error);
-        reject(new Error('Failed to execute the SELECT query'));
-        return;
-      }
-
-      // Process and output of the query results
-      console.log('Query results:', results);
-
-      // Build the response with the query results
-      resolve({ success: true, data: results });
-    });
-  });
-};
-
 const getSupplierName = (request, h) => {
   const database = connection.config.database; // Get the database name from the connection configuration
 
 
   return new Promise((resolve, reject) => {
     // Perform get all query data  with the specified table from database 
-    connection.query(`SELECT DISTINCT nama FROM ${database}.supplier_31_12_2022  INNER JOIN ${database}.pembelian_31_12_2022 ON ${database}.supplier_31_12_2022.kode = ${database}.pembelian_31_12_2022.supplier WHERE ${database}.supplier_31_12_2022.kode not like 'has%' order by nama`, (error, results) => {
+    connection.query(`SELECT DISTINCT nama FROM ${database}.supplier_01_04_2023 INNER JOIN ${database}.pembelian_01_04_2023 ON ${database}.supplier_01_04_2023.kode = ${database}.pembelian_01_04_2023.supplier WHERE ${database}.supplier_01_04_2023.kode not like 'has%' ORDER BY nama`, (error, results) => {
 
       if (error) {
         console.error('Failed to execute the SELECT query:', error);
@@ -129,6 +107,5 @@ module.exports = {
   getRoot,
   connectToDatabase,
   listDatabases,
-  getDatabaseData,
   getSupplierName,
 };
