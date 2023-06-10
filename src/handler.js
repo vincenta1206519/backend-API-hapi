@@ -3,6 +3,10 @@ const mysql = require('mysql');
 let connection = null; // Declare a global variable to hold the MySQL connection values
 
 const getRoot = (request, h) => {
+  if (!connection) {
+    return h.response({ message: 'No database connection established' }).code(503);
+  }
+
   return h.response({ message: 'OK' }).type('application/json');
 };
 
@@ -37,16 +41,14 @@ const connectToDatabase = (request, h) => {
 };
 
 const getSupplierName = (request, h) => {
-  const database = connection ? connection.config.database : null; // Get the database name from the connection configuration if its available
-
-  if (!database) {
-    return Promise.reject(new Error('No database connection established'));
+  if (!connection || !connection.config.database) {
+    return h.response({ message: 'No database connection established' }).code(503);
   }
 
   return new Promise((resolve, reject) => {
-    // Perform get all query data with the specified table from db
+    // Perform GET to all query data with the specified table from dummy db
     connection.query(
-      `SELECT DISTINCT nama FROM ${database}.supplier_01_04_2023 INNER JOIN ${database}.pembelian_01_04_2023 ON ${database}.supplier_01_04_2023.kode = ${database}.pembelian_01_04_2023.supplier WHERE ${database}.supplier_01_04_2023.kode NOT LIKE 'has%' ORDER BY nama`,
+      `SELECT DISTINCT nama FROM ${connection.config.database}.supplier_01_04_2023 INNER JOIN ${connection.config.database}.pembelian_01_04_2023 ON ${connection.config.database}.supplier_01_04_2023.kode = ${connection.config.database}.pembelian_01_04_2023.supplier WHERE ${connection.config.database}.supplier_01_04_2023.kode NOT LIKE 'has%' ORDER BY nama`,
       (error, results) => {
         if (error) {
           console.error('Failed to execute the SELECT query:', error);
