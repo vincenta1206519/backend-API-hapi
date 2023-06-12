@@ -15,7 +15,12 @@ const routes = [
     method: 'GET',
     path: '/api/get-supplier-name',
     handler: handler.getSupplierName,
-  }
+  },
+  {
+    method: 'POST',
+    path: '/api/send-supplier-details',
+    handler: handler.sendSupplierDetails,
+  },
 ];
 
 module.exports = routes;
