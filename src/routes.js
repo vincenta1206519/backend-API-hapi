@@ -18,9 +18,19 @@ const routes = [
   },
   {
     method: 'POST',
-    path: '/api/send-supplier-details',
-    handler: handler.sendSupplierDetails,
+    path: '/api/send-supplier-item-lists',
+    handler: handler.SendSupplierItemLists,
   },
+  {
+    method: 'POST',
+    path: '/api/send-supplier-details',
+    handler: handler.SendSupplierItemDetails,
+  },
+  {
+    method: 'POST',
+    path: '/api/send-supplier-data',
+    handler: handler.SendSupplierData,
+  }
 ];
 
 module.exports = routes;
