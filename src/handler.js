@@ -48,7 +48,7 @@ const getSupplierName = (request, h) => {
   return new Promise((resolve, reject) => {
     // Perform GET to all query data with the specified table from dummy db
     connection.query(
-      `SELECT DISTINCT nama FROM ${connection.config.database}.supplier_01_04_2023 INNER JOIN ${connection.config.database}.pembelian_01_04_2023 ON ${connection.config.database}.supplier_01_04_2023.kode = ${connection.config.database}.pembelian_01_04_2023.supplier WHERE ${connection.config.database}.supplier_01_04_2023.kode NOT LIKE 'has%' ORDER BY nama`,
+      `SELECT DISTINCT nama FROM ${connection.config.database}.supplier INNER JOIN ${connection.config.database}.pembelian ON ${connection.config.database}.supplier.kode = ${connection.config.database}.pembelian.supplier WHERE ${connection.config.database}.supplier.kode NOT LIKE 'has%' ORDER BY nama`,
       (error, results) => {
         if (error) {
           console.error('Failed to execute the SELECT query:', error);
@@ -87,7 +87,7 @@ const SendSupplierItemLists = async (request, h) => {
     const { supplierName } = request.payload;
 
     // Step 1: Get the supplier code and name
-    const getSupplierQuery = `SELECT DISTINCT kode, nama FROM ${connection.config.database}.supplier_01_04_2023 WHERE nama = '${supplierName}'`;
+    const getSupplierQuery = `SELECT DISTINCT kode, nama FROM ${connection.config.database}.supplier WHERE nama = '${supplierName}'`;
     const supplierResults = await executeQuery(getSupplierQuery);
 
     if (supplierResults.length === 0) {
@@ -98,7 +98,7 @@ const SendSupplierItemLists = async (request, h) => {
     const foundSupplierName = supplierResults[0].nama;
 
     // Step 2: Get a list of items sold by that supplier
-    const getItemsQuery = `SELECT DISTINCT kode FROM ${connection.config.database}.barang_01_04_2023 WHERE supplier = '${supplierCode}'`;
+    const getItemsQuery = `SELECT DISTINCT kode FROM ${connection.config.database}.barang WHERE supplier = '${supplierCode}'`;
     const itemsResults = await executeQuery(getItemsQuery);
 
     // If no items were found, return a 404
@@ -123,7 +123,7 @@ const SendSupplierItemDetails = async (request, h) => {
     const { supplierName } = request.payload;
 
     // Step 1: Get the supplier code and name
-    const getSupplierQuery = `SELECT DISTINCT kode, nama FROM ${connection.config.database}.supplier_01_04_2023 WHERE nama = '${supplierName}'`;
+    const getSupplierQuery = `SELECT DISTINCT kode, nama FROM ${connection.config.database}.supplier WHERE nama = '${supplierName}'`;
     const supplierResults = await executeQuery(getSupplierQuery);
 
     if (supplierResults.length === 0) {
@@ -136,10 +136,10 @@ const SendSupplierItemDetails = async (request, h) => {
     // Step 2: Get the date, item code, and total quantity for each item
     const getDateQuantityQuery = `
       SELECT tanggal, kode_barang, SUM(qty) AS total_qty
-      FROM ${connection.config.database}.itempenjualan_01_04_2023
-      INNER JOIN ${connection.config.database}.penjualan_01_04_2023 ON itempenjualan_01_04_2023.kode = penjualan_01_04_2023.kode
-      RIGHT JOIN ${connection.config.database}.barang_01_04_2023 ON itempenjualan_01_04_2023.kode_barang = barang_01_04_2023.kode
-      WHERE barang_01_04_2023.supplier = '${supplierCode}' AND tanggal BETWEEN DATE_SUB('2023-04-01', INTERVAL 20 DAY) AND '2023-04-01'
+      FROM ${connection.config.database}.itempenjualan
+      INNER JOIN ${connection.config.database}.penjualan ON itempenjualan.kode = penjualan.kode
+      RIGHT JOIN ${connection.config.database}.barang ON itempenjualan.kode_barang = barang.kode
+      WHERE barang.supplier = '${supplierCode}' AND tanggal BETWEEN DATE_SUB('2023-04-01', INTERVAL 20 DAY) AND '2023-04-01'
       GROUP BY tanggal, kode_barang
       ORDER BY kode_barang, tanggal ASC`;
 
@@ -161,7 +161,7 @@ const SendSupplierData = async (request, h) => {
     const { supplierName } = request.payload;
 
     // Step 1: Get the supplier code and name
-    const getSupplierQuery = `SELECT DISTINCT kode, nama FROM ${connection.config.database}.supplier_01_04_2023 WHERE nama = '${supplierName}'`;
+    const getSupplierQuery = `SELECT DISTINCT kode, nama FROM ${connection.config.database}.supplier WHERE nama = '${supplierName}'`;
     const supplierResults = await executeQuery(getSupplierQuery);
 
     if (supplierResults.length === 0) {
@@ -172,7 +172,7 @@ const SendSupplierData = async (request, h) => {
     const foundSupplierName = supplierResults[0].nama;
 
     // Step 2: Get a list of items sold by that supplier
-    const getItemsQuery = `SELECT DISTINCT kode FROM ${connection.config.database}.barang_01_04_2023 WHERE supplier = '${supplierCode}'`;
+    const getItemsQuery = `SELECT DISTINCT kode FROM ${connection.config.database}.barang WHERE supplier = '${supplierCode}'`;
     const itemsResults = await executeQuery(getItemsQuery);
 
     if (itemsResults.length === 0) {
@@ -181,13 +181,13 @@ const SendSupplierData = async (request, h) => {
 
     // Step 3: Get the item details
     const getDateQuantityQuery = `
-      SELECT tanggal, kode_barang, SUM(qty) AS total_qty
-      FROM ${connection.config.database}.itempenjualan_01_04_2023
-      INNER JOIN ${connection.config.database}.penjualan_01_04_2023 ON itempenjualan_01_04_2023.kode = penjualan_01_04_2023.kode
-      RIGHT JOIN ${connection.config.database}.barang_01_04_2023 ON itempenjualan_01_04_2023.kode_barang = barang_01_04_2023.kode
-      WHERE barang_01_04_2023.supplier = '${supplierCode}' AND tanggal BETWEEN DATE_SUB('2023-04-01', INTERVAL 20 DAY) AND '2023-04-01'
-      GROUP BY tanggal, kode_barang
-      ORDER BY kode_barang, tanggal ASC`;
+    SELECT tanggal, kode_barang, SUM(qty) AS total_qty
+    FROM ${connection.config.database}.itempenjualan
+    INNER JOIN ${connection.config.database}.penjualan ON itempenjualan.kode = penjualan.kode
+    RIGHT JOIN ${connection.config.database}.barang ON itempenjualan.kode_barang = barang.kode
+    WHERE barang.supplier = '${supplierCode}' AND tanggal BETWEEN DATE_SUB('2023-04-01', INTERVAL 20 DAY) AND '2023-04-01'
+    GROUP BY tanggal, kode_barang
+    ORDER BY kode_barang, tanggal ASC`;
 
     const dateQuantityResults = await executeQuery(getDateQuantityQuery);
 
