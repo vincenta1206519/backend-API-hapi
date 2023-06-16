@@ -30,6 +30,11 @@ const routes = [
     method: 'POST',
     path: '/api/send-supplier-data',
     handler: handler.SendSupplierData,
+  },
+  {
+    method: 'GET',
+    path: '/api/get-prediction/{supplierName}',
+    handler: handler.getPredictionValue,
   }
 ];
 

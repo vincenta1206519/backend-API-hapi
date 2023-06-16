@@ -198,6 +198,21 @@ const SendSupplierData = async (request, h) => {
   }
 };
 
+const getPredictionValue = async (request, h) => {
+  try {
+    const supplierName = request.params.supplierName;
+    const apiUrl = `http://34.101.74.248:5000/predict/${encodeURIComponent(supplierName)}`;
+
+    const response = await axios.get(apiUrl);
+    const predictionValue = response.data; // Assuming the API returns the prediction value directly
+
+    return h.response({ prediction: predictionValue }).code(200);
+  } catch (error) {
+    console.error('Error retrieving prediction value:', error);
+    return h.response({ message: 'Failed to retrieve prediction value' }).code(500);
+  }
+};
+
 module.exports = {
   getRoot,
   connectToDatabase,
@@ -205,4 +220,5 @@ module.exports = {
   SendSupplierItemLists,
   SendSupplierItemDetails,
   SendSupplierData,
+  getPredictionValue
 };
