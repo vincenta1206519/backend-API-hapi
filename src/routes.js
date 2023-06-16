@@ -33,7 +33,7 @@ const routes = [
   },
   {
     method: 'GET',
-    path: '/api/get-prediction/{supplierName}',
+    path: '/api/get-supplier-name/{supplierName}',
     handler: handler.getPredictionValue,
   }
 ];
