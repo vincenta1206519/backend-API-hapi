@@ -1,6 +1,8 @@
 # Features :
 - POST Connect to database
 - GET supplier names
+- POST supplier data
+- GET prediction results
 
 
 # How to run this back-end service :
@@ -35,8 +37,9 @@ Otherwise, it will send an **error message**.
 ```
 dependencies: 
     "@hapi/hapi": "^21.3.2",
+    "axios": "^1.4.0",
     "mysql": "^2.18.1",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
 ```
 ```
 engines: 
@@ -112,3 +115,4 @@ npm --version
 ```
 npm install
 ```
+12. Consider using PM2 to set the instance to keep running after closing SSH
