@@ -8,7 +8,7 @@ const getRoot = (request, h) => {
     return h.response({ message: 'No database connection established' }).code(503);
   }
 
-  return h.response({ message: 'OK' }).type('application/json');
+  return h.response({ message: 'This is the root node for wawasan API' }).type('application/json');
 };
 
 const connectToDatabase = (request, h) => {
